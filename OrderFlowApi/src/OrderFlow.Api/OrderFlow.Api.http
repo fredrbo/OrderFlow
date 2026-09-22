@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:5099
+
+### Cria um pedido
+# @name createOrder
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "cliente": "Maria Silva",
+  "produto": "Notebook",
+  "valor": 4599.90
+}
+
+### Lista todos os pedidos
+GET {{baseUrl}}/orders
+Accept: application/json
+
+### Obtém um pedido (usa o id retornado no POST acima)
+GET {{baseUrl}}/orders/{{createOrder.response.body.$.id}}
+Accept: application/json
+
+### Pedido inválido (400)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "cliente": "",
+  "produto": "Notebook",
+  "valor": 0
+}
