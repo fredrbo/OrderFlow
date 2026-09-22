@@ -1,0 +1,34 @@
+# ===== .NET =====
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userprefs
+.vs/
+TestResults/
+*.nupkg
+appsettings.*.local.json
+
+# ===== Node / React =====
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== Ambiente =====
+.env
+.env.local
+.env.*.local
+
+# ===== IDEs / SO =====
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
