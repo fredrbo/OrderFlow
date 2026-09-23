@@ -3,10 +3,6 @@ using RabbitMQ.Client;
 
 namespace OrderFlow.Infrastructure.Messaging;
 
-/// <summary>
-/// Mantém uma única conexão com o RabbitMQ por processo (conexões são caras; canais são baratos).
-/// A conexão é criada sob demanda e a topologia (exchange, fila e binding) é declarada uma vez.
-/// </summary>
 internal sealed class RabbitMqConnection(IOptions<RabbitMqOptions> options) : IAsyncDisposable
 {
     private readonly RabbitMqOptions _options = options.Value;
@@ -56,9 +52,17 @@ internal sealed class RabbitMqConnection(IOptions<RabbitMqOptions> options) : IA
             _options.Exchange, ExchangeType.Topic, durable: true, autoDelete: false,
             cancellationToken: cancellationToken);
 
-        // Declarada também pela API para que nenhuma mensagem se perca caso o worker ainda não tenha subido.
+        await channel.QueueDeclareAsync(
+            _options.OrderCreatedDeadLetterQueue, durable: true, exclusive: false, autoDelete: false,
+            cancellationToken: cancellationToken);
+
         await channel.QueueDeclareAsync(
             _options.OrderCreatedQueue, durable: true, exclusive: false, autoDelete: false,
+            arguments: new Dictionary<string, object?>
+            {
+                ["x-dead-letter-exchange"] = string.Empty,
+                ["x-dead-letter-routing-key"] = _options.OrderCreatedDeadLetterQueue
+            },
             cancellationToken: cancellationToken);
 
         await channel.QueueBindAsync(

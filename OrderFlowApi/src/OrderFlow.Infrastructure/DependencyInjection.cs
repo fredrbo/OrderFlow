@@ -15,7 +15,9 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("OrderFlow")
             ?? throw new InvalidOperationException("Connection string 'OrderFlow' não configurada.");
 
-        services.AddDbContext<OrderFlowDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<OrderFlowDbContext>(options => options.UseNpgsql(
+            connectionString,
+            npgsql => npgsql.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null)));
         services.AddScoped<IOrderRepository, OrderRepository>();
 
         services.AddOptions<RabbitMqOptions>()
