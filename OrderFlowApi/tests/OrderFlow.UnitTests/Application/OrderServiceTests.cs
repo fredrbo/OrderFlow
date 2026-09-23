@@ -13,16 +13,17 @@ public class OrderServiceTests
     private static readonly DateTimeOffset Now = new(2026, 9, 22, 12, 0, 0, TimeSpan.Zero);
 
     private readonly IOrderRepository _repository = Substitute.For<IOrderRepository>();
-    private readonly IOrderEventPublisher _publisher = Substitute.For<IOrderEventPublisher>();
+    private readonly IOrderEventOutbox _outbox = Substitute.For<IOrderEventOutbox>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly OrderService _sut;
 
     public OrderServiceTests()
     {
-        _sut = new OrderService(_repository, _publisher, new FixedTimeProvider(Now));
+        _sut = new OrderService(_repository, _outbox, _unitOfWork, new FixedTimeProvider(Now));
     }
 
     [Fact]
-    public async Task CreateAsync_PersisteAntesDePublicarEvento()
+    public async Task CreateAsync_RegistraPedidoEEventoNaMesmaTransacao()
     {
         var request = new CreateOrderRequest("Maria", "Notebook", 4599.90m);
 
@@ -33,32 +34,33 @@ public class OrderServiceTests
 
         Received.InOrder(() =>
         {
-            _repository.AddAsync(Arg.Is<Order>(o => o.Id == response.Id), Arg.Any<CancellationToken>());
-            _publisher.PublishAsync(Arg.Is<OrderCreatedEvent>(e => e.Id == response.Id), Arg.Any<CancellationToken>());
+            _repository.Add(Arg.Is<Order>(o => o.Id == response.Id));
+            _outbox.Add(Arg.Is<OrderCreatedEvent>(e => e.Id == response.Id));
+            _unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>());
         });
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task CreateAsync_ComDadosInvalidos_NaoPersisteNemPublica()
+    public async Task CreateAsync_ComDadosInvalidos_NaoRegistraNemSalva()
     {
         var request = new CreateOrderRequest("", "Notebook", 0);
 
         await Assert.ThrowsAsync<DomainException>(() => _sut.CreateAsync(request, CancellationToken.None));
 
-        await _repository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
-        await _publisher.DidNotReceiveWithAnyArgs().PublishAsync(default!, default);
+        _repository.DidNotReceiveWithAnyArgs().Add(default!);
+        _outbox.DidNotReceiveWithAnyArgs().Add(default!);
+        await _unitOfWork.DidNotReceiveWithAnyArgs().SaveChangesAsync(default);
     }
 
     [Fact]
-    public async Task CreateAsync_QuandoPersistenciaFalha_NaoPublica()
+    public async Task CreateAsync_QuandoPersistenciaFalha_PropagaErro()
     {
-        _repository.AddAsync(Arg.Any<Order>(), Arg.Any<CancellationToken>())
+        _unitOfWork.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException(new InvalidOperationException("db down")));
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => _sut.CreateAsync(new CreateOrderRequest("Maria", "Notebook", 10m), CancellationToken.None));
-
-        await _publisher.DidNotReceiveWithAnyArgs().PublishAsync(default!, default);
     }
 
     [Fact]

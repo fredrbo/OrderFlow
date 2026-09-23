@@ -6,11 +6,7 @@ namespace OrderFlow.Infrastructure.Persistence.Repositories;
 
 internal sealed class OrderRepository(OrderFlowDbContext dbContext) : IOrderRepository
 {
-    public async Task AddAsync(Order order, CancellationToken cancellationToken)
-    {
-        dbContext.Orders.Add(order);
-        await dbContext.SaveChangesAsync(cancellationToken);
-    }
+    public void Add(Order order) => dbContext.Orders.Add(order);
 
     public Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
         dbContext.Orders

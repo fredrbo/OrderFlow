@@ -41,8 +41,8 @@ public sealed class OrdersController(IOrderService orderService) : ControllerBas
         Ok(await assistant.AskAsync(request, cancellationToken));
 
     /// <summary>Obtém os detalhes de um pedido.</summary>
-    [HttpGet("{id:guid}")]
     /// <remarks>Inclui o histórico de mudanças de status, em ordem cronológica.</remarks>
+    [HttpGet("{id:guid}")]
     [ProducesResponseType<OrderDetailsResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<OrderDetailsResponse>> GetById(Guid id, CancellationToken cancellationToken)

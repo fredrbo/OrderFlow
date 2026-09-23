@@ -7,15 +7,17 @@ namespace OrderFlow.Application.Orders;
 
 public sealed class OrderService(
     IOrderRepository repository,
-    IOrderEventPublisher publisher,
+    IOrderEventOutbox outbox,
+    IUnitOfWork unitOfWork,
     TimeProvider timeProvider) : IOrderService
 {
     public async Task<OrderResponse> CreateAsync(CreateOrderRequest request, CancellationToken cancellationToken)
     {
         var order = Order.Create(request.Cliente, request.Produto, request.Valor, timeProvider.GetUtcNow());
 
-        await repository.AddAsync(order, cancellationToken);
-        await publisher.PublishAsync(OrderCreatedEvent.From(order), cancellationToken);
+        repository.Add(order);
+        outbox.Add(OrderCreatedEvent.From(order));
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return OrderResponse.From(order);
     }

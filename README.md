@@ -11,13 +11,13 @@ Sistema de gestão de pedidos com processamento assíncrono via mensageria e um 
 ## Fluxo
 
 ```
-Web ──HTTP──▶ API ──▶ PostgreSQL
-               │
-               └──evento order.created──▶ RabbitMQ ──▶ Worker ──▶ PostgreSQL
-                                                   (Pendente → Processando → 5s → Finalizado)
+Web ──HTTP──▶ API ──▶ PostgreSQL (pedido + outbox, mesma transação)
+                                   │
+                        OutboxProcessor ──order.created──▶ RabbitMQ ──▶ Worker ──▶ PostgreSQL
+                                                                    (Pendente → Processando → 5s → Finalizado)
 ```
 
-1. O usuário cria um pedido na Web; a API grava com status **Pendente** e publica `order.created`.
+1. O usuário cria um pedido na Web; a API grava o pedido com status **Pendente** e o evento `order.created` na outbox, na mesma transação. Um processo em segundo plano publica o evento no RabbitMQ, então nenhum pedido fica sem evento, mesmo com o broker fora do ar.
 2. O Worker consome a mensagem, muda para **Processando** e, após 5 segundos, para **Finalizado**. Cada mudança de status fica registrada no histórico do pedido.
 3. A Web atualiza a lista automaticamente e avisa quando um status muda.
 4. No card "Pergunte sobre os pedidos", uma LLM local responde perguntas usando dados reais.

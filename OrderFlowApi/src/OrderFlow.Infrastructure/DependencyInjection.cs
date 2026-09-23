@@ -8,6 +8,7 @@ using OrderFlow.Application.Abstractions;
 using OrderFlow.Application.Assistant;
 using OrderFlow.Infrastructure.Ai;
 using OrderFlow.Infrastructure.Messaging;
+using OrderFlow.Infrastructure.Messaging.Outbox;
 using OrderFlow.Infrastructure.Persistence;
 using OrderFlow.Infrastructure.Persistence.Queries;
 using OrderFlow.Infrastructure.Persistence.Repositories;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddDbContext<OrderFlowDbContext>(options => options.UseNpgsql(
             connectionString,
             npgsql => npgsql.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null)));
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<OrderFlowDbContext>());
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderStatistics, OrderStatistics>();
 
@@ -33,7 +35,16 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<RabbitMqConnection>();
-        services.AddSingleton<IOrderEventPublisher, RabbitMqOrderEventPublisher>();
+        services.AddSingleton<RabbitMqPublisher>();
+
+        services.AddOptions<OutboxOptions>()
+            .Bind(configuration.GetSection(OutboxOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<OutboxSignal>();
+        services.AddScoped<IOrderEventOutbox, OrderEventOutbox>();
+        services.AddHostedService<OutboxProcessor>();
 
         services.AddLlm(configuration);
 
