@@ -8,7 +8,7 @@ API REST de pedidos em .NET 10. Persiste no PostgreSQL, publica um evento no Rab
 |--------|----------------|-----------|
 | POST   | `/orders`      | Cria um novo pedido (status inicial `Pendente`) |
 | GET    | `/orders`      | Lista todos os pedidos |
-| GET    | `/orders/{id}` | Obtém detalhes de um pedido |
+| GET    | `/orders/{id}` | Obtém detalhes de um pedido, com o histórico de status |
 | POST   | `/orders/ask`  | Responde uma pergunta em linguagem natural sobre os pedidos |
 
 Documentação interativa em http://localhost:5099/swagger e exemplos em [`OrderFlow.Api.http`](src/OrderFlow.Api/OrderFlow.Api.http). Erros seguem o padrão ProblemDetails (RFC 9457).

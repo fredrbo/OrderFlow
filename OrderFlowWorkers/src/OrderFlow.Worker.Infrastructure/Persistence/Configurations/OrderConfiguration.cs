@@ -19,5 +19,8 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.DataCriacao).HasColumnName("data_criacao");
         builder.Property(o => o.DataFinalizacao).HasColumnName("data_finalizacao");
         builder.Property<uint>("Version").IsRowVersion();
+
+        builder.HasMany(o => o.Historico).WithOne().HasForeignKey(h => h.OrderId);
+        builder.Navigation(o => o.Historico).HasField("_historico");
     }
 }

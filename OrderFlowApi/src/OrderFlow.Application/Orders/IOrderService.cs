@@ -5,6 +5,6 @@ namespace OrderFlow.Application.Orders;
 public interface IOrderService
 {
     Task<OrderResponse> CreateAsync(CreateOrderRequest request, CancellationToken cancellationToken);
-    Task<OrderResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<OrderDetailsResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyList<OrderResponse>> ListAsync(CancellationToken cancellationToken);
 }

@@ -15,6 +15,9 @@ public sealed class Order
     public DateTimeOffset DataCriacao { get; private set; }
     public DateTimeOffset? DataFinalizacao { get; private set; }
 
+    private readonly List<OrderStatusHistory> _historico = [];
+    public IReadOnlyCollection<OrderStatusHistory> Historico => _historico.AsReadOnly();
+
     private Order() { }
 
     public static Order Create(string cliente, string produto, decimal valor, DateTimeOffset dataCriacao)
@@ -34,7 +37,7 @@ public sealed class Order
         if (valor <= 0)
             throw new DomainException("O valor deve ser maior que zero.");
 
-        return new Order
+        var order = new Order
         {
             Id = Guid.CreateVersion7(dataCriacao),
             Cliente = cliente.Trim(),
@@ -43,5 +46,9 @@ public sealed class Order
             Status = OrderStatus.Pendente,
             DataCriacao = dataCriacao
         };
+
+        order._historico.Add(OrderStatusHistory.Create(order.Id, order.Status, dataCriacao));
+
+        return order;
     }
 }

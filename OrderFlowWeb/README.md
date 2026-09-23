@@ -6,7 +6,7 @@ Interface web do OrderFlow em React + Vite + TypeScript.
 
 - Listagem de pedidos em tabela responsiva (colunas secundárias se adaptam em telas menores)
 - Criação de pedidos via formulário com validação (mesmas regras da API)
-- Visualização dos detalhes do pedido, incluindo data de finalização
+- Visualização dos detalhes do pedido, incluindo data de finalização e linha do tempo com o histórico de status
 - Feedback visual de mudança de status: a linha é destacada e um toast é exibido
 - Atualização automática adaptativa: a cada 2s enquanto houver pedidos em andamento e a cada 15s quando todos estiverem finalizados, com indicador do horário da última atualização
 - "Pergunte sobre os pedidos": perguntas em linguagem natural respondidas por IA com dados reais

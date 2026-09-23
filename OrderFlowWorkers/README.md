@@ -2,7 +2,7 @@
 
 Worker em .NET 10 que consome a fila `orderflow.order-created` do RabbitMQ e processa os pedidos:
 
-**Pendente → Processando → (5 segundos) → Finalizado**, registrando a data de finalização.
+**Pendente → Processando → (5 segundos) → Finalizado**, registrando a data de finalização e cada mudança no histórico de status (`order_status_history`), na mesma transação da atualização do pedido.
 
 ## Arquitetura
 
@@ -12,7 +12,7 @@ Clean Architecture enxuta, no mesmo padrão da API:
 src/
 ├── OrderFlow.Worker.Domain          Order com as transições StartProcessing() e Finish()
 ├── OrderFlow.Worker.Application     OrderProcessor: regra de processamento e idempotência
-├── OrderFlow.Worker.Infrastructure  EF Core + PostgreSQL (mesma tabela orders da API)
+├── OrderFlow.Worker.Infrastructure  EF Core + PostgreSQL (mesmas tabelas orders e order_status_history da API)
 └── OrderFlow.Worker                 Host, consumer do RabbitMQ e política de retry
 tests/
 └── OrderFlow.Worker.UnitTests       Testes de domínio e do processador (com FakeTimeProvider)

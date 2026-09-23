@@ -31,7 +31,7 @@ public sealed class OrderProcessor(
         {
             if (order.Status == OrderStatus.Pendente)
             {
-                order.StartProcessing();
+                order.StartProcessing(timeProvider.GetUtcNow());
                 await repository.SaveChangesAsync(cancellationToken);
                 logger.LogInformation("Pedido {OrderId} em processamento.", orderId);
             }

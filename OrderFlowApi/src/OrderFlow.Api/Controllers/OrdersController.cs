@@ -42,9 +42,10 @@ public sealed class OrdersController(IOrderService orderService) : ControllerBas
 
     /// <summary>Obtém os detalhes de um pedido.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType<OrderResponse>(StatusCodes.Status200OK)]
+    /// <remarks>Inclui o histórico de mudanças de status, em ordem cronológica.</remarks>
+    [ProducesResponseType<OrderDetailsResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<OrderResponse>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<OrderDetailsResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var order = await orderService.GetByIdAsync(id, cancellationToken);
         return order is null ? NotFound() : Ok(order);

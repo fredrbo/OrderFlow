@@ -10,6 +10,15 @@ export interface Order {
   data_finalizacao: string | null
 }
 
+export interface OrderStatusHistoryEntry {
+  status: OrderStatus
+  data_alteracao: string
+}
+
+export interface OrderDetails extends Order {
+  historico: OrderStatusHistoryEntry[]
+}
+
 export interface CreateOrderInput {
   cliente: string
   produto: string

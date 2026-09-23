@@ -36,6 +36,7 @@ public class OrderProcessorTests
     public async Task ProcessAsync_PedidoPendente_FicaProcessandoEFinalizaAposODelay()
     {
         var order = GivenOrder(OrderStatus.Pendente);
+        var startedAt = _time.GetUtcNow();
 
         var processing = _sut.ProcessAsync(order.Id, CancellationToken.None);
 
@@ -51,6 +52,10 @@ public class OrderProcessorTests
 
         Assert.Equal(OrderStatus.Finalizado, order.Status);
         Assert.Equal(_time.GetUtcNow(), order.DataFinalizacao);
+        Assert.Collection(
+            order.Historico,
+            h => Assert.Equal((OrderStatus.Processando, startedAt), (h.Status, h.DataAlteracao)),
+            h => Assert.Equal((OrderStatus.Finalizado, startedAt + Delay), (h.Status, h.DataAlteracao)));
         await _repository.Received(2).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 

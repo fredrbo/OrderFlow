@@ -19,12 +19,15 @@ public sealed class Order(
     public DateTimeOffset DataCriacao { get; private set; } = dataCriacao;
     public DateTimeOffset? DataFinalizacao { get; private set; } = dataFinalizacao;
 
-    public void StartProcessing()
+    private readonly List<OrderStatusHistory> _historico = [];
+    public IReadOnlyCollection<OrderStatusHistory> Historico => _historico.AsReadOnly();
+
+    public void StartProcessing(DateTimeOffset startedAt)
     {
         if (Status != OrderStatus.Pendente)
             throw new DomainException($"Apenas pedidos pendentes podem iniciar o processamento. Status atual: {Status}.");
 
-        Status = OrderStatus.Processando;
+        ChangeStatus(OrderStatus.Processando, startedAt);
     }
 
     public void Finish(DateTimeOffset finishedAt)
@@ -32,7 +35,13 @@ public sealed class Order(
         if (Status != OrderStatus.Processando)
             throw new DomainException($"Apenas pedidos em processamento podem ser finalizados. Status atual: {Status}.");
 
-        Status = OrderStatus.Finalizado;
+        ChangeStatus(OrderStatus.Finalizado, finishedAt);
         DataFinalizacao = finishedAt;
+    }
+
+    private void ChangeStatus(OrderStatus status, DateTimeOffset changedAt)
+    {
+        Status = status;
+        _historico.Add(OrderStatusHistory.Create(Id, status, changedAt));
     }
 }

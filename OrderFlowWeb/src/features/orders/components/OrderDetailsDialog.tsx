@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrency, formatDateTime, formatTime } from '@/lib/format'
 import { useOrder } from '../hooks/use-orders'
 import { OrderStatusBadge } from './OrderStatusBadge'
+import { OrderStatusTimeline } from './OrderStatusTimeline'
 
 interface OrderDetailsDialogProps {
   orderId: string | null
@@ -64,20 +65,23 @@ export function OrderDetailsDialog({ orderId, onClose }: OrderDetailsDialogProps
         )}
 
         {order && (
-          <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3">
-            <Detail label="Cliente">{order.cliente}</Detail>
-            <Detail label="Produto">{order.produto}</Detail>
-            <Detail label="Valor">
-              <span className="tabular-nums">{formatCurrency(order.valor)}</span>
-            </Detail>
-            <Detail label="Status">
-              <OrderStatusBadge status={order.status} />
-            </Detail>
-            <Detail label="Criado em">{formatDateTime(order.data_criacao)}</Detail>
-            {order.data_finalizacao && (
-              <Detail label="Finalizado em">{formatDateTime(order.data_finalizacao)}</Detail>
-            )}
-          </dl>
+          <>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3">
+              <Detail label="Cliente">{order.cliente}</Detail>
+              <Detail label="Produto">{order.produto}</Detail>
+              <Detail label="Valor">
+                <span className="tabular-nums">{formatCurrency(order.valor)}</span>
+              </Detail>
+              <Detail label="Status">
+                <OrderStatusBadge status={order.status} />
+              </Detail>
+              <Detail label="Criado em">{formatDateTime(order.data_criacao)}</Detail>
+              {order.data_finalizacao && (
+                <Detail label="Finalizado em">{formatDateTime(order.data_finalizacao)}</Detail>
+              )}
+            </dl>
+            <OrderStatusTimeline historico={order.historico} />
+          </>
         )}
       </DialogContent>
     </Dialog>

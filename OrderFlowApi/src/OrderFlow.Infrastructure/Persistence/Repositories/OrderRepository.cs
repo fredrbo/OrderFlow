@@ -13,7 +13,10 @@ internal sealed class OrderRepository(OrderFlowDbContext dbContext) : IOrderRepo
     }
 
     public Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+        dbContext.Orders
+            .AsNoTracking()
+            .Include(o => o.Historico.OrderBy(h => h.DataAlteracao))
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
 
     public async Task<IReadOnlyList<Order>> ListAsync(CancellationToken cancellationToken) =>
         await dbContext.Orders

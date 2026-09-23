@@ -20,6 +20,17 @@ public class OrderTests
         Assert.Equal(Now, order.DataCriacao);
     }
 
+    [Fact]
+    public void Create_RegistraStatusPendenteNoHistorico()
+    {
+        var order = Order.Create("Maria", "Notebook", 10m, Now);
+
+        var history = Assert.Single(order.Historico);
+        Assert.Equal(order.Id, history.OrderId);
+        Assert.Equal(OrderStatus.Pendente, history.Status);
+        Assert.Equal(Now, history.DataAlteracao);
+    }
+
     [Theory]
     [InlineData("", "Notebook", 10)]
     [InlineData("   ", "Notebook", 10)]

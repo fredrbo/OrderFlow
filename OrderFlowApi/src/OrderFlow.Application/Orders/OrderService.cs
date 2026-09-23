@@ -20,10 +20,10 @@ public sealed class OrderService(
         return OrderResponse.From(order);
     }
 
-    public async Task<OrderResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<OrderDetailsResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var order = await repository.GetByIdAsync(id, cancellationToken);
-        return order is null ? null : OrderResponse.From(order);
+        return order is null ? null : OrderDetailsResponse.From(order);
     }
 
     public async Task<IReadOnlyList<OrderResponse>> ListAsync(CancellationToken cancellationToken)

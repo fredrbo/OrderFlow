@@ -72,6 +72,21 @@ public class OrderServiceTests
     }
 
     [Fact]
+    public async Task GetByIdAsync_QuandoExiste_RetornaDetalhesComHistorico()
+    {
+        var order = Order.Create("Maria", "Notebook", 10m, Now);
+        _repository.GetByIdAsync(order.Id, Arg.Any<CancellationToken>()).Returns(order);
+
+        var response = await _sut.GetByIdAsync(order.Id, CancellationToken.None);
+
+        Assert.NotNull(response);
+        Assert.Equal(order.Id, response.Id);
+        var history = Assert.Single(response.Historico);
+        Assert.Equal(OrderStatus.Pendente, history.Status);
+        Assert.Equal(Now, history.DataAlteracao);
+    }
+
+    [Fact]
     public async Task ListAsync_RetornaPedidosMapeados()
     {
         var order = Order.Create("Maria", "Notebook", 10m, Now);

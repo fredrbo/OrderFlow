@@ -18,7 +18,7 @@ Web ──HTTP──▶ API ──▶ PostgreSQL
 ```
 
 1. O usuário cria um pedido na Web; a API grava com status **Pendente** e publica `order.created`.
-2. O Worker consome a mensagem, muda para **Processando** e, após 5 segundos, para **Finalizado**.
+2. O Worker consome a mensagem, muda para **Processando** e, após 5 segundos, para **Finalizado**. Cada mudança de status fica registrada no histórico do pedido.
 3. A Web atualiza a lista automaticamente e avisa quando um status muda.
 4. No card "Pergunte sobre os pedidos", uma LLM local responde perguntas usando dados reais.
 
