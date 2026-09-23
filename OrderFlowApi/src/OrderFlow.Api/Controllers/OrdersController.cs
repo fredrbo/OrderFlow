@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using OrderFlow.Application.Assistant;
+using OrderFlow.Application.Assistant.Dtos;
 using OrderFlow.Application.Orders;
 using OrderFlow.Application.Orders.Dtos;
 
@@ -25,6 +27,18 @@ public sealed class OrdersController(IOrderService orderService) : ControllerBas
     [ProducesResponseType<IReadOnlyList<OrderResponse>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<OrderResponse>>> List(CancellationToken cancellationToken) =>
         Ok(await orderService.ListAsync(cancellationToken));
+
+    /// <summary>Responde perguntas em linguagem natural sobre os pedidos.</summary>
+    /// <remarks>Ex.: "Quantos pedidos estão pendentes?" ou "Qual o valor total de pedidos finalizados este mês?"</remarks>
+    [HttpPost("ask")]
+    [ProducesResponseType<AskQuestionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<AskQuestionResponse>> Ask(
+        AskQuestionRequest request,
+        [FromServices] IOrderAssistant assistant,
+        CancellationToken cancellationToken) =>
+        Ok(await assistant.AskAsync(request, cancellationToken));
 
     /// <summary>Obtém os detalhes de um pedido.</summary>
     [HttpGet("{id:guid}")]

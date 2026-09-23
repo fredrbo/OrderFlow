@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using OrderFlow.Application.Assistant;
 using OrderFlow.Domain.Exceptions;
 
 namespace OrderFlow.Api.Infrastructure;
 
-/// <summary>
-/// Converte exceções em respostas ProblemDetails (RFC 9457).
-/// Regras de negócio viram 400; qualquer outra falha vira 500 sem vazar detalhes internos.
-/// </summary>
 internal sealed class GlobalExceptionHandler(
     IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
@@ -22,6 +19,12 @@ internal sealed class GlobalExceptionHandler(
                 Title = "Requisição inválida",
                 Detail = exception.Message
             },
+            AssistantUnavailableException => new ProblemDetails
+            {
+                Status = StatusCodes.Status503ServiceUnavailable,
+                Title = "Assistente indisponível",
+                Detail = "Não foi possível falar com o modelo de linguagem. Verifique se o Ollama está rodando."
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
@@ -30,7 +33,7 @@ internal sealed class GlobalExceptionHandler(
         };
 
         if (problem.Status >= StatusCodes.Status500InternalServerError)
-            logger.LogError(exception, "Erro não tratado ao processar {Method} {Path}",
+            logger.LogError(exception, "Falha ao processar {Method} {Path}",
                 httpContext.Request.Method, httpContext.Request.Path);
 
         httpContext.Response.StatusCode = problem.Status!.Value;

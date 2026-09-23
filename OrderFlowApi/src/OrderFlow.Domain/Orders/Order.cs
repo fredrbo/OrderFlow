@@ -13,8 +13,8 @@ public sealed class Order
     public decimal Valor { get; private set; }
     public OrderStatus Status { get; private set; }
     public DateTimeOffset DataCriacao { get; private set; }
+    public DateTimeOffset? DataFinalizacao { get; private set; }
 
-    // Usado pelo EF Core
     private Order() { }
 
     public static Order Create(string cliente, string produto, decimal valor, DateTimeOffset dataCriacao)

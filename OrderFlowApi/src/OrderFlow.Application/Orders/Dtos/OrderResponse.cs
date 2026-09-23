@@ -8,8 +8,9 @@ public sealed record OrderResponse(
     string Produto,
     decimal Valor,
     OrderStatus Status,
-    DateTimeOffset DataCriacao)
+    DateTimeOffset DataCriacao,
+    DateTimeOffset? DataFinalizacao)
 {
     public static OrderResponse From(Order order) =>
-        new(order.Id, order.Cliente, order.Produto, order.Valor, order.Status, order.DataCriacao);
+        new(order.Id, order.Cliente, order.Produto, order.Valor, order.Status, order.DataCriacao, order.DataFinalizacao);
 }

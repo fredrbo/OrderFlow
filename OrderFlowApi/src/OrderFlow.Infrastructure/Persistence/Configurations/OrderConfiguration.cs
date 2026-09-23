@@ -33,6 +33,7 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(20);
 
         builder.Property(o => o.DataCriacao).HasColumnName("data_criacao");
+        builder.Property(o => o.DataFinalizacao).HasColumnName("data_finalizacao");
 
         builder.HasIndex(o => o.DataCriacao);
     }
