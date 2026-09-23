@@ -7,6 +7,7 @@ export interface Order {
   valor: number
   status: OrderStatus
   data_criacao: string
+  data_finalizacao: string | null
 }
 
 export interface CreateOrderInput {

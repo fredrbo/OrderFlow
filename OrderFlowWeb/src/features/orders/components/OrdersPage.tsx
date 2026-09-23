@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AskOrdersCard } from '@/features/assistant/components/AskOrdersCard'
 import { useOrderStatusWatcher } from '../hooks/use-order-status-watcher'
 import { getRefetchInterval, useOrders } from '../hooks/use-orders'
 import { CreateOrderDialog } from './CreateOrderDialog'
@@ -35,6 +36,8 @@ export function OrdersPage() {
           </AlertDescription>
         </Alert>
       )}
+
+      <AskOrdersCard />
 
       <Card>
         <CardHeader>

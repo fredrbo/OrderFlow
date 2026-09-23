@@ -74,6 +74,9 @@ export function OrderDetailsDialog({ orderId, onClose }: OrderDetailsDialogProps
               <OrderStatusBadge status={order.status} />
             </Detail>
             <Detail label="Criado em">{formatDateTime(order.data_criacao)}</Detail>
+            {order.data_finalizacao && (
+              <Detail label="Finalizado em">{formatDateTime(order.data_finalizacao)}</Detail>
+            )}
           </dl>
         )}
       </DialogContent>
