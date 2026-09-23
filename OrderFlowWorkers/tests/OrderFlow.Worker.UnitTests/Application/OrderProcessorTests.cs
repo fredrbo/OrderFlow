@@ -50,6 +50,7 @@ public class OrderProcessorTests
         await processing;
 
         Assert.Equal(OrderStatus.Finalizado, order.Status);
+        Assert.Equal(_time.GetUtcNow(), order.DataFinalizacao);
         await _repository.Received(2).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 

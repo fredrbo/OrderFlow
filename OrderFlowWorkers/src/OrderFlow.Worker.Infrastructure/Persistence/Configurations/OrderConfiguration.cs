@@ -17,6 +17,7 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.Valor).HasColumnName("valor").HasPrecision(18, 2);
         builder.Property(o => o.Status).HasColumnName("status").HasConversion<string>().HasMaxLength(20);
         builder.Property(o => o.DataCriacao).HasColumnName("data_criacao");
+        builder.Property(o => o.DataFinalizacao).HasColumnName("data_finalizacao");
         builder.Property<uint>("Version").IsRowVersion();
     }
 }

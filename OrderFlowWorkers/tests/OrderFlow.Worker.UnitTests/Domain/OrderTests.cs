@@ -29,13 +29,15 @@ public class OrderTests
     }
 
     [Fact]
-    public void Finish_QuandoProcessando_MudaParaFinalizado()
+    public void Finish_QuandoProcessando_MudaParaFinalizadoERegistraData()
     {
         var order = CreateOrder(OrderStatus.Processando);
+        var finishedAt = new DateTimeOffset(2026, 9, 23, 12, 0, 5, TimeSpan.Zero);
 
-        order.Finish();
+        order.Finish(finishedAt);
 
         Assert.Equal(OrderStatus.Finalizado, order.Status);
+        Assert.Equal(finishedAt, order.DataFinalizacao);
     }
 
     [Theory]
@@ -45,6 +47,6 @@ public class OrderTests
     {
         var order = CreateOrder(status);
 
-        Assert.Throws<DomainException>(order.Finish);
+        Assert.Throws<DomainException>(() => order.Finish(DateTimeOffset.UtcNow));
     }
 }

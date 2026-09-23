@@ -38,7 +38,7 @@ public sealed class OrderProcessor(
 
             await Task.Delay(options.Value.ProcessingDelay, timeProvider, cancellationToken);
 
-            order.Finish();
+            order.Finish(timeProvider.GetUtcNow());
             await repository.SaveChangesAsync(cancellationToken);
             logger.LogInformation("Pedido {OrderId} finalizado.", orderId);
         }
