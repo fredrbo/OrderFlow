@@ -3,7 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useOrderStatusWatcher } from '../hooks/use-order-status-watcher'
-import { ORDERS_REFETCH_INTERVAL_MS, useOrders } from '../hooks/use-orders'
+import { getRefetchInterval, useOrders } from '../hooks/use-orders'
 import { CreateOrderDialog } from './CreateOrderDialog'
 import { LiveUpdateIndicator } from './LiveUpdateIndicator'
 import { OrderDetailsDialog } from './OrderDetailsDialog'
@@ -39,7 +39,7 @@ export function OrdersPage() {
       <Card>
         <CardHeader>
           <CardTitle>Pedidos</CardTitle>
-          <CardDescription>Atualização automática a cada {ORDERS_REFETCH_INTERVAL_MS / 1000}s</CardDescription>
+          <CardDescription>Atualização automática a cada {getRefetchInterval(orders) / 1000}s</CardDescription>
           <CardAction>
             <LiveUpdateIndicator updatedAt={dataUpdatedAt} hasError={!!error} />
           </CardAction>

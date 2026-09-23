@@ -17,7 +17,7 @@ export default function App() {
       <main className="min-h-svh bg-muted/40">
         <OrdersPage />
       </main>
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="bottom-right" />
     </QueryClientProvider>
   )
 }
